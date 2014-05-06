@@ -128,12 +128,16 @@ func createDay(c web.C, writer http.ResponseWriter, request *http.Request) {
 	occuranceJson, err := parseJSONBody(request)
 	checkErr(err, "Parsing request body failed:")
 
+	timeLayout := "2006-Jan-02"
+	date, err := time.Parse(timeLayout, occuranceJson["day"].(string))
+	checkErr(err, "Date parsing failed:")
+
 	newOccurance := &Occurance{
 		0,
-		occuranceJson["tag"].(int64),
-		occuranceJson["day"].(time.Time),
-		occuranceJson["degree"].(uint8),
-		occuranceJson["positivity"].(uint8),
+		int64(occuranceJson["tag"].(float64)),
+		date,
+		uint8(occuranceJson["degree"].(float64)),
+		uint8(occuranceJson["positivity"].(float64)),
 	}
 
 	err = dbmap.Insert(newOccurance)
@@ -156,16 +160,19 @@ func updateDay(c web.C, writer http.ResponseWriter, request *http.Request) {
 	//update and store occurance
 	occurance := obj.(*Occurance)
 	if occuranceJson["tag"] != nil {
-		occurance.Tag = occuranceJson["tag"].(int64)
+		occurance.Tag = int64(occuranceJson["tag"].(float64))
 	}
 	if occuranceJson["day"] != nil {
-		occurance.Day = occuranceJson["day"].(time.Time)
+		timeLayout := "2006-Jan-02"
+		date, err := time.Parse(timeLayout, occuranceJson["day"].(string))
+		checkErr(err, "Date parsing failed:")
+		occurance.Day = date
 	}
 	if occuranceJson["degree"] != nil {
-		occurance.Degree = occuranceJson["degree"].(uint8)
+		occurance.Degree = uint8(occuranceJson["degree"].(float64))
 	}
 	if occuranceJson["positivity"] != nil {
-		occurance.Positivity = occuranceJson["positivity"].(uint8)
+		occurance.Positivity = uint8(occuranceJson["positivity"].(float64))
 	}
 
 	_, err = dbmap.Update(occurance)
