@@ -7,3 +7,5 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
+/resources/public/dist/out/
+/resources/public/dist/
