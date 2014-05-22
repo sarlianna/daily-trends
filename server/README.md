@@ -1,22 +1,14 @@
-Server setup:
---------------
+# default
 
-TODO:
+A Clojure library designed to ... well, that part is up to you.
 
-- move some of the post/put body parsing into middleware if possible
-- break up some of the more repetitive parsings into methods
+## Usage
 
-For now just using Goji and sqlite3, and writing raw json strings to response writers.
+FIXME
 
-Models:
+## License
 
-- Tag: Just some text that represents an action or event.
-- Occurance: The bulk of the app, links a tag to a day and some additional
-    info like the degree it happened and whether it was good or bad.
-    These should be unique for a tag/date combination.
+Copyright © 2014 FIXME
 
-Routes:
-
-Basically they're just CRUD for both tags and days right now.  Days actually link to
-Occurances, and have all the same data.  Maybe naming the routes something different is
-just confusing.
+Distributed under the Eclipse Public License either version 1.0 or (at
+your option) any later version.
