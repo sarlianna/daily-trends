@@ -1,0 +1,61 @@
+[
+ ;; tags
+ {:db/id #db/id[:db.part/db]
+  :db/ident :tag/title
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db/fulltext true
+  :db/doc "A tag's main text."
+  :db.install/_attribute :db.part/db}
+
+ ;; occurances
+ {:db/id #db/id[:db.part/db]
+  :db/ident :occurance/id
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/unique :db.unique/identity
+  :db/doc "Convenience reference id to help with REST."
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :occurance/day
+  :db/valueType :db.type/instant
+  :db/cardinality :db.cardinality/one
+  :db/doc "Day an occurance took place."
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :occurance/tag
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Tag/event that took place."
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :occurance/positivity
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Whether the occurance was good, bad, or neutral."
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/db]
+  :db/ident :occurance/degree
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "Degree to which occurance was present in the day.  Defaults to Absent/Present, which should be used if degree is n/a."
+  :db.install/_attribute :db.part/db}
+
+ ;; occurance/positivity enum values
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.postype/negative]
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.postype/neutral]
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.postype/positive]
+
+ ;; occurance/degree enum values
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.degreetype/absent]
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.degreetype/little]
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.degreetype/present]
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.degreetype/much]
+ [:db/add #db/id[:db.part/user] :db/ident :occurance.degreetype/abundant]
+
+ ]
