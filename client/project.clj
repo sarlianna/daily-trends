@@ -5,7 +5,6 @@
                  [org.clojure/data.json "0.2.4"]
                  [org.clojure/tools.trace "0.7.8"]
                  [om "0.5.0"]
-                 [org.clojure/data.json "0.2.4"]
                  [ring "1.2.2"]
                  [garden "1.1.6"]
                  [compojure "1.1.8"]
