@@ -10,9 +10,6 @@
 (def uri "datomic:free://localhost:4334/trends")
 (def conn (d/connect uri))
 
-(defn index []
-  (file-response "public/index.html" {:root "resources"}))
-
 (defn generate-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/edn"}
@@ -33,6 +30,8 @@
     (d/transact conn [{:db/id #db/id[:db.part/user] :tag/title title}])
     (generate-response {:status :ok})))
 
+; currently there's a bug where this updates the first tag in the collection
+; and not the tag specified by title
 (defn update-tag [title params]
   (let [db    (d/db conn)
         new-title (:tag/title params)
@@ -111,13 +110,12 @@
                              :where
                              [?occurance :occurance/id ?id]]
                    db))]
-    (.println System/out [eid id])
     (d/transact conn [[:db.fn/retractEntity eid]])
     (generate-response {:status :ok})))
 
 (defroutes routes
 
-  (GET "/" [] (index))
+  (GET "/" [] (file-response "public/index.html" {:root "resources"}))
 
   (GET "/tags" [] (tags))
   (POST "/tags"
@@ -139,7 +137,8 @@
     {{id :id} :params params :params edn-params :edn-params}
     (delete-day id params))
 
-  (route/files "/" {:root "resources/public"}))
+  (route/files "/public" {:root "resources/public"})
+  (route/not-found "Page not found"))
 
 (def app
   (-> routes
