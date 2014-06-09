@@ -20,13 +20,27 @@
 
 (enable-console-print!)
 
-(def app-state (atom {:tags ["tag" "example" "yeah"]}))
+(def app-state (atom {:tags []}))
 
-(defn today [day]
-  (reify
-    om/IRender
-    (render [this]
-      )))
+(def ^:private meths
+  {:get "GET"
+   :put "PUT"
+   :post "POST"
+   :delete "DELETE"})
+
+(defn edn-xhr [{:keys [method url data on-complete]}]
+  (let [xhr (XhrIo.)]
+    (events/listen xhr goog.net.EventType.COMPLETE
+      (fn [e]
+        (on-complete (reader/read-string (.getResponseText xhr)))))
+    (. xhr
+       (send url (meths method) (when data (pr-str data))
+         #js {"Content-Type" "application/edn"}))))
+
+(defn display [show]
+  (if show
+    #js {}
+    #js {:display "none"}))
 
 (defn tag [tag]
   (reify
@@ -43,8 +57,32 @@
       (om/transact! app :tags #(conj % new-tag))
       (om/set-state! owner :text ""))))
 
-(defn handle-change [e owner {:keys [text]}]
-  (om/set-state! owner :text (.. e -target -value)))
+(defn persist-tag [title]
+  ;save tag to list of all tags
+  (edn-xhr
+    {:method :post
+     :url (str "tags/")
+     :data {:tag/title title}
+     :on-complete
+     (fn [res]
+       (println "server response:" res))})
+
+;unfinished
+(defn persist-day [tag day degree positivity]
+  ;save current day as having this tag present
+  (edn-xhr
+    {:method :post
+     :url (str "days/")
+     :data {:occurance/tag ""
+            :occurance/day ""
+            :occurance/degree ""
+            :occurance/positivity ""}
+     :on-complete
+     (fn [res]
+       (println "server response:" res))}))
+
+(defn handle-change [e data edit-key owner]
+  (om/transact! data edit-key (fn [_] (.. e -target -value))))
 
 (defn tags-list [app owner]
   (reify
@@ -71,7 +109,7 @@
             {:init-state state}))
         (dom/label nil "Add a tag:")
         (dom/input #js {:ref "new-tag" :type "text" :value (:text state)
-                        :onChange #(handle-change % owner state)})
+                        :onChange #(handle-change % state :text owner)})
         (dom/button #js {:onClick #(add-tag app owner)} "Add Tag")))))
 
 (om/root tags-list app-state
